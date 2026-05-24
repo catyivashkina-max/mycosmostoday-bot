@@ -13,9 +13,15 @@ from dotenv import load_dotenv
 
 from astro import get_astro_profile, get_daily_forecast
 from database import create_tables, save_user, get_user, save_forecast, get_forecast
-
+import logging
 
 load_dotenv()
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(name)s | %(message)s"
+)
+
+logger = logging.getLogger(__name__)
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
@@ -287,9 +293,13 @@ async def daily_forecast(message: Message):
 
         await message.answer(forecast)
 
-    except Exception as e:
-        print(e)
-        await message.answer(f"Ошибка:\n{e}")
+
+    except Exception:
+        logger.exception("Ошибка при генерации прогноза")
+        await message.answer(
+            "Что-то пошло не так ✨\n\n"
+            "Попробуй, пожалуйста, чуть позже."
+        )
 
     finally:
         active_forecast_requests.discard(user_id)
@@ -351,7 +361,7 @@ async def main():
         raise ValueError("BOT_TOKEN не найден")
 
     create_tables()
-    print("Бот запущен 🚀")
+    logger.info("Бот запущен 🚀")
 
     #asyncio.create_task(daily_reminder())
 
