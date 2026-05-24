@@ -26,6 +26,7 @@ bot = Bot(
 
 dp = Dispatcher()
 
+active_forecast_requests = set()
 
 class BirthForm(StatesGroup):
     waiting_for_birth_date = State()
@@ -80,7 +81,7 @@ async def start(message: Message, state: FSMContext):
         birth_date, birth_time, birth_city, astro_profile = user
 
         if not astro_profile:
-            astro_profile = get_astro_profile(
+            astro_profile = await get_astro_profile(
                 birth_date,
                 birth_time,
                 birth_city
@@ -190,7 +191,7 @@ async def process_birth_city(message: Message, state: FSMContext):
     birth_time = data.get("birth_time")
 
     try:
-        astro_profile = get_astro_profile(
+        astro_profile = await get_astro_profile(
             birth_date,
             birth_time,
             birth_city
@@ -249,6 +250,51 @@ async def daily_forecast(message: Message):
         await message.answer(saved_forecast)
         return
 
+    user_id = message.from_user.id
+
+    if user_id in active_forecast_requests:
+        await message.answer(
+            "Я уже формирую твой прогноз ✨\n\n"
+            "Подожди немного, скоро он будет готов."
+        )
+        return
+
+    active_forecast_requests.add(user_id)
+
+    try:
+        await message.answer("✨ Анализирую положение планет...")
+        await asyncio.sleep(2)
+
+        await message.answer("🌙 Считываю энергетику дня...")
+        await asyncio.sleep(2)
+
+        await message.answer("🪐 Формирую твой прогноз...")
+        await asyncio.sleep(2)
+
+        forecast = await get_daily_forecast(
+            birth_date,
+            birth_time,
+            birth_city
+        )
+
+        save_forecast(
+            message.from_user.id,
+            today,
+            birth_date,
+            birth_time,
+            birth_city,
+            forecast
+        )
+
+        await message.answer(forecast)
+
+    except Exception as e:
+        print(e)
+        await message.answer(f"Ошибка:\n{e}")
+
+    finally:
+        active_forecast_requests.discard(user_id)
+
     await message.answer("✨ Анализирую положение планет...")
     await asyncio.sleep(2)
 
@@ -259,7 +305,7 @@ async def daily_forecast(message: Message):
     await asyncio.sleep(2)
 
     try:
-        forecast = get_daily_forecast(
+        forecast = await get_daily_forecast(
             birth_date,
             birth_time,
             birth_city
@@ -310,7 +356,7 @@ async def show_astro_profile(message: Message):
         await message.answer("🌙 Рассчитываю твой астропрофиль...")
 
         try:
-            astro_profile = get_astro_profile(
+            astro_profile = await get_astro_profile(
                 birth_date,
                 birth_time,
                 birth_city

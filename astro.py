@@ -1,4 +1,4 @@
-from openai import OpenAI
+from openai import AsyncOpenAI
 import os
 from datetime import datetime
 
@@ -9,7 +9,7 @@ from geo import get_city_data
 
 load_dotenv()
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 SIGN_RU = {
     "Ari": "Овне", "Aries": "Овне",
@@ -179,7 +179,7 @@ def get_today_transits(birth_date: str, birth_time: str, city: str) -> str:
 """
 
 
-def get_astro_profile(birth_date: str, birth_time: str, city: str) -> str:
+async def get_astro_profile(birth_date: str, birth_time: str, city: str) -> str:
     real_astro = get_real_astrology(birth_date, birth_time, city)
 
     prompt = f"""
@@ -224,7 +224,7 @@ def get_astro_profile(birth_date: str, birth_time: str, city: str) -> str:
 Не слишком длинно.
 """
 
-    response = client.chat.completions.create(
+    response = await client.chat.completions.create(
         model="gpt-4.1-mini",
         messages=[{"role": "user", "content": prompt}]
     )
@@ -232,7 +232,7 @@ def get_astro_profile(birth_date: str, birth_time: str, city: str) -> str:
     return response.choices[0].message.content
 
 
-def get_daily_forecast(birth_date: str, birth_time: str, city: str) -> str:
+async def get_daily_forecast(birth_date: str, birth_time: str, city: str) -> str:
     real_astro = get_real_astrology(birth_date, birth_time, city)
     today_transits = get_today_transits(birth_date, birth_time, city)
 
@@ -282,7 +282,7 @@ def get_daily_forecast(birth_date: str, birth_time: str, city: str) -> str:
 Не слишком длинно.
 """
 
-    response = client.chat.completions.create(
+    response = await client.chat.completions.create(
         model="gpt-4.1-mini",
         messages=[{"role": "user", "content": prompt}]
     )
