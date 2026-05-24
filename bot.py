@@ -237,9 +237,10 @@ async def daily_forecast(message: Message):
 
     birth_date, birth_time, birth_city, astro_profile = user
     today = date.today().isoformat()
+    user_id = message.from_user.id
 
     saved_forecast = get_forecast(
-        message.from_user.id,
+        user_id,
         today,
         birth_date,
         birth_time,
@@ -249,8 +250,6 @@ async def daily_forecast(message: Message):
     if saved_forecast:
         await message.answer(saved_forecast)
         return
-
-    user_id = message.from_user.id
 
     if user_id in active_forecast_requests:
         await message.answer(
@@ -278,7 +277,7 @@ async def daily_forecast(message: Message):
         )
 
         save_forecast(
-            message.from_user.id,
+            user_id,
             today,
             birth_date,
             birth_time,
@@ -294,38 +293,6 @@ async def daily_forecast(message: Message):
 
     finally:
         active_forecast_requests.discard(user_id)
-
-    await message.answer("✨ Анализирую положение планет...")
-    await asyncio.sleep(2)
-
-    await message.answer("🌙 Считываю энергетику дня...")
-    await asyncio.sleep(2)
-
-    await message.answer("🪐 Формирую твой прогноз...")
-    await asyncio.sleep(2)
-
-    try:
-        forecast = await get_daily_forecast(
-            birth_date,
-            birth_time,
-            birth_city
-        )
-    except Exception as e:
-        print(e)
-        await message.answer(f"Ошибка:\n{e}")
-        return
-
-    save_forecast(
-        message.from_user.id,
-        today,
-        birth_date,
-        birth_time,
-        birth_city,
-        forecast
-    )
-
-    await message.answer(forecast)
-
 
 @dp.message(F.text == "Изменить данные")
 async def change_data(message: Message, state: FSMContext):
