@@ -1,8 +1,10 @@
 import sqlite3
 
 
-DB_NAME = "users.db"
+import sqlite3
+import os
 
+DB_NAME = os.getenv("DB_NAME", "users.db")
 
 def create_tables():
     conn = sqlite3.connect(DB_NAME)
