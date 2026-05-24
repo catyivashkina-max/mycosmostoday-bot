@@ -156,3 +156,26 @@ def get_forecast(
 
     return None
 
+async def daily_reminder():
+    while True:
+        now = datetime.now()
+
+        if now.hour == 9 and now.minute == 0:
+            users = get_all_users()
+
+            for user in users:
+                telegram_id = user[0]
+
+                try:
+                    await bot.send_message(
+                        telegram_id,
+                        "Доброе утро ✨\n\n"
+                        "Твой персональный прогноз на сегодня уже ждёт тебя 🌙",
+                        reply_markup=main_keyboard()
+                    )
+                except Exception as e:
+                    print(f"Не удалось отправить напоминание {telegram_id}: {e}")
+
+            await asyncio.sleep(60)
+
+        await asyncio.sleep(30)
