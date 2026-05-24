@@ -1,6 +1,7 @@
 import asyncio
 import os
 from datetime import datetime, date
+from aiogram.filters import Command
 
 from aiogram import Bot, Dispatcher, F
 from aiogram.client.default import DefaultBotProperties
@@ -12,7 +13,7 @@ from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton
 from dotenv import load_dotenv
 
 from astro import get_astro_profile, get_daily_forecast
-from database import create_tables, save_user, get_user, save_forecast, get_forecast, save_event
+from database import create_tables, save_user, get_user, save_forecast, get_forecast, save_event, get_stats
 import logging
 
 load_dotenv()
@@ -24,6 +25,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
+ADMIN_ID = int(os.getenv("ADMIN_ID", "0"))
 
 bot = Bot(
     token=BOT_TOKEN,
@@ -411,6 +413,22 @@ async def show_astro_profile(message: Message):
 
     await message.answer(astro_profile)
 
+@dp.message(Command("stats"))
+async def admin_stats(message: Message):
+    if message.from_user.id != ADMIN_ID:
+        await message.answer("Эта команда недоступна.")
+        return
+
+    stats = get_stats()
+
+    await message.answer(
+        "📊 <b>Статистика бота</b>\n\n"
+        f"👤 Пользователей: {stats['users_count']}\n"
+        f"🚀 Запусков /start: {stats['starts_count']}\n"
+        f"🔮 Прогнозов: {stats['forecasts_count']}\n"
+        f"🌙 Астропрофилей: {stats['profiles_count']}\n"
+        f"🔥 Активных сегодня: {stats['active_today']}"
+    )
 
 async def main():
     if not BOT_TOKEN:
