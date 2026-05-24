@@ -415,9 +415,8 @@ async def show_astro_profile(message: Message):
 
 @dp.message(Command("stats"))
 async def admin_stats(message: Message):
-    if message.from_user.id != ADMIN_ID:
-        await message.answer("Эта команда недоступна.")
-        return
+    print(message.from_user.id)
+    print(ADMIN_ID)
 
     stats = get_stats()
     print(message.from_user.id)
