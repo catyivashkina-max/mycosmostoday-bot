@@ -420,6 +420,8 @@ async def admin_stats(message: Message):
         return
 
     stats = get_stats()
+    print(message.from_user.id)
+    print(ADMIN_ID)
 
     await message.answer(
         "📊 <b>Статистика бота</b>\n\n"
