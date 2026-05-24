@@ -386,7 +386,7 @@ async def main():
     create_tables()
     print("Бот запущен 🚀")
 
-    asyncio.create_task(daily_reminder())
+    #asyncio.create_task(daily_reminder())
 
     await dp.start_polling(bot)
 
