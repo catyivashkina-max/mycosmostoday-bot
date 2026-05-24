@@ -1,0 +1,7 @@
+aiogram
+python-dotenv
+openai
+kerykeion
+geopy
+timezonefinder
+requests
