@@ -419,8 +419,9 @@ async def admin_stats(message: Message):
     print(ADMIN_ID)
 
     stats = get_stats()
-    print(message.from_user.id)
-    print(ADMIN_ID)
+    if message.from_user.id != ADMIN_ID:
+        await message.answer("Эта команда недоступна.")
+        return
 
     await message.answer(
         "📊 <b>Статистика бота</b>\n\n"
