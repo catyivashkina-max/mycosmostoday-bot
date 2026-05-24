@@ -47,7 +47,6 @@ def main_keyboard():
 def start_keyboard():
     return ReplyKeyboardMarkup(
         keyboard=[
-            [KeyboardButton(text="Узнать мой день ✨")],
             [KeyboardButton(text="Что умеет бот?")]
         ],
         resize_keyboard=True
@@ -74,14 +73,19 @@ def is_valid_birth_time(text: str) -> bool:
 
 
 @dp.message(CommandStart())
-async def start(message: Message):
+async def start(message: Message, state: FSMContext):
     user = get_user(message.from_user.id)
 
     if user:
         birth_date, birth_time, birth_city, astro_profile = user
 
         if not astro_profile:
-            astro_profile = get_astro_profile(birth_date, birth_time, birth_city)
+            astro_profile = get_astro_profile(
+                birth_date,
+                birth_time,
+                birth_city
+            )
+
             save_user(
                 message.from_user.id,
                 birth_date,
@@ -96,15 +100,16 @@ async def start(message: Message):
         )
         return
 
+    await state.set_state(BirthForm.waiting_for_birth_date)
+
     await message.answer(
         "Привет ✨ Я MyCosmosToday.\n\n"
-        "Я составляю персональный прогноз "
-        "на основе твоей натальной карты "
-        "и реального положения планет ✨.\n\n"
-        "Нажми кнопку ниже, чтобы начать.",
-        reply_markup=start_keyboard()
+        "Я составляю персональный прогноз на основе твоей натальной карты "
+        "и реального положения планет ✨\n\n"
+        "Чтобы начать, введи дату рождения в формате ДД.ММ.ГГГГ.\n\n"
+        "Например:\n"
+        "15.08.1998"
     )
-
 
 @dp.message(F.text == "Что умеет бот?")
 async def about(message: Message):
