@@ -1,5 +1,5 @@
 import sqlite3
-
+from datetime import datetime
 
 import sqlite3
 import os
@@ -17,6 +17,16 @@ def create_tables():
             birth_time TEXT,
             birth_city TEXT,
             astro_profile TEXT
+        )
+    """)
+
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS analytics (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            telegram_id INTEGER,
+            action TEXT,
+            created_at TEXT
         )
     """)
 
@@ -182,3 +192,22 @@ async def daily_reminder():
 
         await asyncio.sleep(30)
 
+def save_event(telegram_id: int, action: str):
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        INSERT INTO analytics (
+            telegram_id,
+            action,
+            created_at
+        )
+        VALUES (?, ?, ?)
+    """, (
+        telegram_id,
+        action,
+        datetime.now().isoformat()
+    ))
+
+    conn.commit()
+    conn.close()

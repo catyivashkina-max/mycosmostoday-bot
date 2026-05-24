@@ -12,7 +12,7 @@ from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton
 from dotenv import load_dotenv
 
 from astro import get_astro_profile, get_daily_forecast
-from database import create_tables, save_user, get_user, save_forecast, get_forecast
+from database import create_tables, save_user, get_user, save_forecast, get_forecast, save_event
 import logging
 
 load_dotenv()
@@ -90,6 +90,8 @@ def is_valid_birth_time(text: str) -> bool:
 @dp.message(CommandStart())
 async def start(message: Message, state: FSMContext):
     user = get_user(message.from_user.id)
+
+    save_event(message.from_user.id,"start")
 
     if user:
         birth_date, birth_time, birth_city, astro_profile = user
@@ -285,6 +287,7 @@ async def process_birth_city(message: Message, state: FSMContext):
 @dp.message(F.text == "Получить прогноз на сегодня ✨")
 async def daily_forecast(message: Message):
     user = get_user(message.from_user.id)
+    save_event(message.from_user.id, "forecast")
 
     if not user:
         await message.answer(
@@ -371,6 +374,7 @@ async def change_data(message: Message, state: FSMContext):
 @dp.message(F.text == "Мой астропрофиль 🌙")
 async def show_astro_profile(message: Message):
     user = get_user(message.from_user.id)
+    save_event(message.from_user.id, "astro_profile")
 
     if not user:
         await message.answer(
