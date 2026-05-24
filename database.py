@@ -219,13 +219,25 @@ def get_stats():
     cursor.execute("SELECT COUNT(*) FROM users")
     users_count = cursor.fetchone()[0]
 
-    cursor.execute("SELECT COUNT(*) FROM analytics WHERE action = 'start'")
+    cursor.execute("""
+        SELECT COUNT(*)
+        FROM analytics
+        WHERE action = 'start'
+    """)
     starts_count = cursor.fetchone()[0]
 
-    cursor.execute("SELECT COUNT(*) FROM analytics WHERE action = 'forecast'")
+    cursor.execute("""
+        SELECT COUNT(*)
+        FROM analytics
+        WHERE action = 'forecast'
+    """)
     forecasts_count = cursor.fetchone()[0]
 
-    cursor.execute("SELECT COUNT(*) FROM analytics WHERE action = 'astro_profile'")
+    cursor.execute("""
+        SELECT COUNT(*)
+        FROM analytics
+        WHERE action = 'astro_profile'
+    """)
     profiles_count = cursor.fetchone()[0]
 
     cursor.execute("""
@@ -235,6 +247,22 @@ def get_stats():
     """)
     active_today = cursor.fetchone()[0]
 
+    cursor.execute("""
+        SELECT COUNT(*)
+        FROM analytics
+        WHERE action = 'forecast'
+        AND date(created_at) = date('now')
+    """)
+    forecasts_today = cursor.fetchone()[0]
+
+    cursor.execute("""
+        SELECT COUNT(*)
+        FROM analytics
+        WHERE action = 'astro_profile'
+        AND date(created_at) = date('now')
+    """)
+    profiles_today = cursor.fetchone()[0]
+
     conn.close()
 
     return {
@@ -242,5 +270,7 @@ def get_stats():
         "starts_count": starts_count,
         "forecasts_count": forecasts_count,
         "profiles_count": profiles_count,
-        "active_today": active_today
+        "active_today": active_today,
+        "forecasts_today": forecasts_today,
+        "profiles_today": profiles_today
     }

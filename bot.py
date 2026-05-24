@@ -424,11 +424,14 @@ async def admin_stats(message: Message):
     await message.answer(
         "📊 <b>Статистика бота</b>\n\n"
         f"👤 Пользователей: {stats['users_count']}\n"
-        f"🚀 Запусков /start: {stats['starts_count']}\n"
-        f"🔮 Прогнозов: {stats['forecasts_count']}\n"
-        f"🌙 Астропрофилей: {stats['profiles_count']}\n"
-        f"🔥 Активных сегодня: {stats['active_today']}"
-    )
+        f"🚀 Запусков /start: {stats['starts_count']}\n\n"
+
+        f"🔮 Всего прогнозов: {stats['forecasts_count']}\n"
+        f"🌙 Всего астропрофилей: {stats['profiles_count']}\n\n"
+
+        f"🔥 Активных сегодня: {stats['active_today']}\n"
+        f"✨ Прогнозов сегодня: {stats['forecasts_today']}\n"
+        f"🪐 Астропрофилей сегодня: {stats['profiles_today']}"
 
 async def main():
     if not BOT_TOKEN:
