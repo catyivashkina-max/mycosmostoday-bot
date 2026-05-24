@@ -196,19 +196,46 @@ async def process_birth_city(message: Message, state: FSMContext):
     birth_date = data.get("birth_date")
     birth_time = data.get("birth_time")
 
-    try:
-        astro_profile = await get_astro_profile(
-            birth_date,
-            birth_time,
-            birth_city
-        )
-    except Exception:
-        await message.answer(
-            "Не удалось обработать данные ✨\n\n"
-            "Проверь, пожалуйста, город рождения "
-            "и попробуй еще раз."
-        )
-        return
+    old_user = get_user(message.from_user.id)
+
+    if old_user:
+        old_birth_date, old_birth_time, old_birth_city, old_astro_profile = old_user
+
+        if (
+                old_birth_date == birth_date
+                and old_birth_time == birth_time
+                and old_birth_city.lower().strip() == birth_city.lower().strip()
+                and old_astro_profile
+        ):
+            astro_profile = old_astro_profile
+        else:
+            try:
+                astro_profile = await get_astro_profile(
+                    birth_date,
+                    birth_time,
+                    birth_city
+                )
+            except Exception:
+                await message.answer(
+                    "Не удалось обработать данные ✨\n\n"
+                    "Проверь, пожалуйста, город рождения "
+                    "и попробуй еще раз."
+                )
+                return
+    else:
+        try:
+            astro_profile = await get_astro_profile(
+                birth_date,
+                birth_time,
+                birth_city
+            )
+        except Exception:
+            await message.answer(
+                "Не удалось обработать данные ✨\n\n"
+                "Проверь, пожалуйста, город рождения "
+                "и попробуй еще раз."
+            )
+            return
 
     save_user(
         message.from_user.id,
