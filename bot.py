@@ -36,7 +36,7 @@ class BirthForm(StatesGroup):
 def main_keyboard():
     return ReplyKeyboardMarkup(
         keyboard=[
-            [KeyboardButton(text="Получить прогноз ✨")],
+            [KeyboardButton(text="Получить прогноз на сегодня ✨")],
             [KeyboardButton(text="Мой астропрофиль 🌙")],
             [KeyboardButton(text="Изменить данные")]
         ],
@@ -223,7 +223,7 @@ async def process_birth_city(message: Message, state: FSMContext):
     await state.clear()
 
 
-@dp.message(F.text == "Получить прогноз ✨")
+@dp.message(F.text == "Получить прогноз на сегодня ✨")
 async def daily_forecast(message: Message):
     user = get_user(message.from_user.id)
 
