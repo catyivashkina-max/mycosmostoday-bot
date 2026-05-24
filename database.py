@@ -212,47 +212,35 @@ def save_event(telegram_id: int, action: str):
     conn.commit()
     conn.close()
 
-    def get_stats():
-        conn = sqlite3.connect(DB_NAME)
-        cursor = conn.cursor()
+def get_stats():
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
 
-        cursor.execute("SELECT COUNT(*) FROM users")
-        users_count = cursor.fetchone()[0]
+    cursor.execute("SELECT COUNT(*) FROM users")
+    users_count = cursor.fetchone()[0]
 
-        cursor.execute("""
-            SELECT COUNT(*) 
-            FROM analytics 
-            WHERE action = 'start'
-        """)
-        starts_count = cursor.fetchone()[0]
+    cursor.execute("SELECT COUNT(*) FROM analytics WHERE action = 'start'")
+    starts_count = cursor.fetchone()[0]
 
-        cursor.execute("""
-            SELECT COUNT(*) 
-            FROM analytics 
-            WHERE action = 'forecast'
-        """)
-        forecasts_count = cursor.fetchone()[0]
+    cursor.execute("SELECT COUNT(*) FROM analytics WHERE action = 'forecast'")
+    forecasts_count = cursor.fetchone()[0]
 
-        cursor.execute("""
-            SELECT COUNT(*) 
-            FROM analytics 
-            WHERE action = 'astro_profile'
-        """)
-        profiles_count = cursor.fetchone()[0]
+    cursor.execute("SELECT COUNT(*) FROM analytics WHERE action = 'astro_profile'")
+    profiles_count = cursor.fetchone()[0]
 
-        cursor.execute("""
-            SELECT COUNT(DISTINCT telegram_id)
-            FROM analytics
-            WHERE date(created_at) = date('now')
-        """)
-        active_today = cursor.fetchone()[0]
+    cursor.execute("""
+        SELECT COUNT(DISTINCT telegram_id)
+        FROM analytics
+        WHERE date(created_at) = date('now')
+    """)
+    active_today = cursor.fetchone()[0]
 
-        conn.close()
+    conn.close()
 
-        return {
-            "users_count": users_count,
-            "starts_count": starts_count,
-            "forecasts_count": forecasts_count,
-            "profiles_count": profiles_count,
-            "active_today": active_today
-        }
+    return {
+        "users_count": users_count,
+        "starts_count": starts_count,
+        "forecasts_count": forecasts_count,
+        "profiles_count": profiles_count,
+        "active_today": active_today
+    }
