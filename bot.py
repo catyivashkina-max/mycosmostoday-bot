@@ -50,6 +50,14 @@ def main_keyboard():
         resize_keyboard=True
     )
 
+def cancel_keyboard():
+    return ReplyKeyboardMarkup(
+        keyboard=[
+            [KeyboardButton(text="❌ Отмена")]
+        ],
+        resize_keyboard=True
+    )
+
 
 def start_keyboard():
     return ReplyKeyboardMarkup(
@@ -125,6 +133,15 @@ async def about(message: Message):
         "по дате, времени и месту рождения ✨"
     )
 
+    @dp.message(F.text == "❌ Отмена")
+    async def cancel(message: Message, state: FSMContext):
+        await state.clear()
+
+        await message.answer(
+            "Действие отменено ✨",
+            reply_markup=main_keyboard()
+        )
+
 
 @dp.message(F.text == "Узнать мой день ✨")
 async def ask_birth_date(message: Message, state: FSMContext):
@@ -134,7 +151,8 @@ async def ask_birth_date(message: Message, state: FSMContext):
         "Супер ✨\n\n"
         "Введи дату рождения в формате ДД.ММ.ГГГГ\n\n"
         "Например:\n"
-        "15.08.1998"
+        "15.08.1998",
+        reply_markup=cancel_keyboard()
     )
 
 
@@ -148,7 +166,8 @@ async def process_birth_date(message: Message, state: FSMContext):
             "Пожалуйста, введи дату рождения так:\n"
             "ДД.ММ.ГГГГ\n\n"
             "Например:\n"
-            "15.08.1998"
+            "15.08.1998",
+            reply_markup=cancel_keyboard()
         )
         return
 
@@ -160,7 +179,8 @@ async def process_birth_date(message: Message, state: FSMContext):
         "Например:\n"
         "14:35\n\n"
         "Если не знаешь — напиши:\n"
-        "не знаю"
+        "не знаю",
+        reply_markup=cancel_keyboard()
     )
 
 
@@ -174,7 +194,8 @@ async def process_birth_time(message: Message, state: FSMContext):
             "Пожалуйста, введи время так:\n"
             "14:35\n\n"
             "Если не знаешь точное время — напиши:\n"
-            "не знаю"
+            "не знаю",
+            reply_markup=cancel_keyboard()
         )
         return
 
@@ -184,7 +205,8 @@ async def process_birth_time(message: Message, state: FSMContext):
     await message.answer(
         "Теперь введи город рождения 🌍\n\n"
         "Например:\n"
-        "Москва"
+        "Москва",
+        reply_markup=cancel_keyboard()
     )
 
 
@@ -219,7 +241,8 @@ async def process_birth_city(message: Message, state: FSMContext):
                 await message.answer(
                     "Не удалось обработать данные ✨\n\n"
                     "Проверь, пожалуйста, город рождения "
-                    "и попробуй еще раз."
+                    "и попробуй еще раз.",
+                    reply_markup=cancel_keyboard()
                 )
                 return
     else:
@@ -233,7 +256,8 @@ async def process_birth_city(message: Message, state: FSMContext):
             await message.answer(
                 "Не удалось обработать данные ✨\n\n"
                 "Проверь, пожалуйста, город рождения "
-                "и попробуй еще раз."
+                "и попробуй еще раз.",
+                reply_markup=cancel_keyboard()
             )
             return
 
@@ -251,7 +275,8 @@ async def process_birth_city(message: Message, state: FSMContext):
         f"Время рождения: {birth_time}\n"
         f"Город рождения: {birth_city}\n\n"
         f"{astro_profile}",
-        reply_markup=main_keyboard()
+        reply_markup=main_keyboard(),
+        rreply_markup=cancel_keyboard()
     )
 
     await state.clear()
