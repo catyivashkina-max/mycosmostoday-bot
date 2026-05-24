@@ -432,6 +432,7 @@ async def admin_stats(message: Message):
         f"🔥 Активных сегодня: {stats['active_today']}\n"
         f"✨ Прогнозов сегодня: {stats['forecasts_today']}\n"
         f"🪐 Астропрофилей сегодня: {stats['profiles_today']}"
+    )
 
 async def main():
     if not BOT_TOKEN:
