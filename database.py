@@ -172,7 +172,7 @@ async def daily_reminder():
     while True:
         now = datetime.now()
 
-        if now.hour == 9 and now.minute == 0:
+        if now.hour == 9 and now.minute == 40:
             users = get_all_users()
 
             for user in users:
